@@ -1,0 +1,273 @@
+html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>JUST FOR 涵涵</title>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Microsoft YaHei",sans-serif;
+}
+
+body{
+  background:#fff7fa;
+  min-height:100vh;
+  overflow:hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 爱心飘落画布 */
+#loveRain{
+  position:fixed;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+  pointer-events:none;
+}
+
+.header{
+  text-align:center;
+  padding-top:40px;
+  z-index:10;
+  position:relative;
+}
+
+.header h1{
+  color:#ff6b81;
+  font-size:22px;
+  margin-bottom:8px;
+}
+
+.header p{
+  color:#ff94a3;
+  letter-spacing:2px;
+  font-size:14px;
+}
+
+.header h2{
+  margin-top:16px;
+  color:#ff7c94;
+  font-size:18px;
+}
+
+/* 弹窗卡片样式，适配手机 */
+.tip-card{
+  position:absolute;
+  background:#ffe9ee;
+  border-radius:12px;
+  padding:14px 16px;
+  color:#c94c66;
+  font-size:15px;
+  box-shadow:0 4px 14px #ffd6e0;
+  opacity:0;
+  transform:scale(0.5);
+  transition:all 0.6s ease;
+  z-index:5;
+  max-width:260px;
+  -webkit-transform:scale(0.5);
+}
+
+.tip-card.show{
+  opacity:1;
+  transform:scale(1);
+  -webkit-transform:scale(1);
+}
+
+.footer{
+  text-align:center;
+  position:fixed;
+  bottom:24px;
+  width:100%;
+  color:#ff6b81;
+  z-index:10;
+}
+
+.footer h2{
+  font-size:18px;
+}
+.footer p{
+  margin-top:8px;
+  font-size:16px;
+}
+
+/* 结尾告白大字 */
+.end-text{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(0.3);
+  font-size:36px;
+  color:#ff6b81;
+  font-weight:bold;
+  opacity:0;
+  transition: all 1.2s ease;
+  z-index:20;
+  text-align:center;
+  -webkit-transform:translate(-50%,-50%) scale(0.3);
+}
+.end-text.show{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+  -webkit-transform:translate(-50%,-50%) scale(1);
+}
+</style>
+</head>
+<body>
+
+<canvas id="loveRain"></canvas>
+
+<div class="header">
+  <h1>✧一份小小的心意JUST FOR YOU</h1>
+  <p>A LITTLE LOVE, ONE NOTE AT A TIME</p>
+  <h2>把祝福写给我的涵涵宝贝</h2>
+</div>
+
+<div class="footer">
+  <h2>至我的涵涵宝贝</h2>
+  <p style="margin-top:10px;font-size:18px;">愿你被温柔以待。</p>
+</div>
+
+<div class="end-text">涵涵<br>I LOVE YOU</div>
+
+<script>
+// 涵涵温馨提示列表【已新增你想要的句子】
+const tips = [
+  "♡温馨提示 涵涵宝宝：好好爱自己",
+  "♡温馨提示 涵涵宝宝：保持好心情",
+  "♡温馨提示 涵涵宝宝：天凉了多穿衣服",
+  "♡温馨提示 涵涵宝宝：好好吃饭",
+  "♡温馨提示 涵涵宝宝：别熬夜",
+  "♡温馨提示 涵涵宝宝：身体健康",
+  "♡温馨提示 涵涵宝宝：工作顺利",
+  "♡温馨提示 涵涵宝宝：顺顺利利",
+  "♡温馨提示 涵涵宝宝：天天开心",
+  "♡温馨提示 涵涵宝宝：记得多喝水",
+  "♡温馨提示 涵涵宝宝：愿你平安喜乐",
+  "♡温馨提示 涵涵宝宝：今天也要快乐",
+  "♡温馨提示 涵涵宝宝：愿你心想事成",
+  "♡温馨提示 涵涵宝宝：每一天都有惊喜",
+  "♡温馨提示 涵涵宝宝：做个好梦",
+  "♡温馨提示 涵涵宝宝：笑起来真好看",
+  "♡温馨提示 涵涵宝宝：愿你被温柔以待",
+  "♡温馨提示 涵涵宝宝：好运常伴你",
+  "♡温馨提示 涵涵宝宝：愿所有美好如期而至",
+  "♡温馨提示 涵涵宝宝：照顾好自己",
+  "♡温馨提示 涵涵宝宝：把烦恼交给晚风",
+  "♡温馨提示 涵涵宝宝：愿你所遇皆温柔",
+  "♡温馨提示 涵涵宝宝：愿你眼里一直有光",
+  "♡温馨提示 涵涵宝宝：生活明朗，万物可爱",
+  "♡温馨提示 涵涵宝宝：慢慢来，一切都会好",
+  "♡温馨提示 涵涵宝宝：愿你一直闪闪发光",
+  "♡温馨提示 涵涵宝宝：你在，就是晴天",
+  "♡温馨提示 涵涵宝宝：眼里全是星光",
+  "♡温馨提示 涵涵宝宝：你比糖还甜呀",
+  "♡温馨提示 涵涵宝宝：你笑，我就心动",
+  "♡温馨提示 涵涵宝宝：你是人间理想",
+  "♡温馨提示 涵涵宝宝：我一直都在呀",
+  "♡温馨提示 涵涵宝宝：没事，有我呢",
+  "♡温馨提示 涵涵宝宝：抱抱就不难过啦"
+];
+
+const endDom = document.querySelector(".end-text");
+let index = 0;
+function createCard(){
+  if(index >= tips.length){
+    //全部卡片弹出完成，显示告白大字
+    setTimeout(()=>{
+      endDom.classList.add("show");
+    },1000);
+    return;
+  }
+
+  const div = document.createElement("div");
+  div.className = "tip-card";
+  div.innerText = tips[index];
+
+  // 适配手机屏幕边界，防止卡片超出屏幕
+  const maxX = window.innerWidth - 270;
+  const maxY = window.innerHeight - 100;
+  const x = Math.random() * maxX;
+  const y = Math.random() * maxY;
+
+  div.style.left = x + "px";
+  div.style.top = y + "px";
+  document.body.appendChild(div);
+
+  setTimeout(()=>div.classList.add("show"), 10);
+
+  index++;
+  setTimeout(createCard, 300);
+}
+
+window.onload = createCard;
+
+// 爱心飘落特效（适配Safari）
+const canvas = document.getElementById("loveRain");
+const ctx = canvas.getContext("2d");
+let hearts = [];
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+function createHeart(){
+  return {
+    x: Math.random() * canvas.width,
+    y: -10,
+    size: Math.random() * 10 + 6,
+    speed: Math.random() * 1.2 + 0.4,
+    opacity: Math.random() * 0.5 + 0.4,
+    drift: (Math.random() - 0.5) * 0.6
+  };
+}
+
+function drawHeart(x, y, size, opacity){
+  ctx.save();
+  ctx.globalAlpha = opacity;
+  ctx.fillStyle = "#ff6b81";
+  ctx.beginPath();
+  ctx.moveTo(x, y + size / 4);
+  ctx.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + size / 4);
+  ctx.bezierCurveTo(x - size / 2, y + size / 2, x, y + size * 0.75, x, y + size);
+  ctx.bezierCurveTo(x, y + size * 0.75, x + size / 2, y + size / 2, x + size / 2, y + size / 4);
+  ctx.bezierCurveTo(x + size / 2, y, x, y, x, y + size / 4);
+  ctx.fill();
+  ctx.restore();
+}
+
+function updateHearts(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if(Math.random() < 0.08){
+    hearts.push(createHeart());
+  }
+
+  for(let i = 0; i < hearts.length; i++){
+    const h = hearts[i];
+    h.y += h.speed;
+    h.x += h.drift;
+
+    drawHeart(h.x, h.y, h.size, h.opacity);
+
+    if(h.y > canvas.height + 20){
+      hearts.splice(i, 1);
+      i--;
+    }
+  }
+  requestAnimationFrame(updateHearts);
+}
+
+updateHearts();
+</script>
+
+</body>
+</html>
